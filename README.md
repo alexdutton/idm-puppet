@@ -9,8 +9,8 @@ First, install Puppet (`apt-get install puppet`) and then follow the instruction
 [librarian-puppet](https://github.com/voxpupuli/librarian-puppet). In summary:
 
 ```shell
-apt-get install puppet
-gem install librarian-puppet
+apt-get install librarian-puppet git
+cd /usr/share/puppet
 librarian-puppet init
 ```
 
@@ -21,6 +21,8 @@ forge 'https://forgeapi.puppetlabs.com'
 
 mod 'alexsdutton-idm', :git => 'https://github.com/alexsdutton/idm-puppet.git'
 ```
+
+You'll need to make sure there's no `metadata` line.
 
 This puppet module uses hiera to provide deployment-specific configuration data. Edit
 `/etc/puppet/code/hiera/common.yaml` to contain:
