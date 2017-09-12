@@ -9,7 +9,7 @@ First, install Puppet (`apt-get install puppet`) and then follow the instruction
 [librarian-puppet](https://github.com/voxpupuli/librarian-puppet). In summary:
 
 ```shell
-apt-get install librarian-puppet git
+apt-get install librarian-puppet git pwgen
 cd /usr/share/puppet
 librarian-puppet init
 ```
@@ -77,7 +77,13 @@ idm::integration::server_name: idm-demo-integration.it.ox.ac.uk
 idm::web:self_signed_cert: true
 ```
 
-You'll want to replace each `[secret]` with a randomly-generated secret (using e.g. `pwgen 32`).
+You'll want to replace each `[secret]` with a randomly-generated secret (using e.g. `pwgen 32`). You can do this with the following script:
+
+```bash
+while grep "\[secret\]" /etc/puppet/code/hiera/common.yaml; do
+    sed -i "0,/\[secret]/{s/\[secret\]/$(pwgen 32 1)/}" /etc/puppet/code/hiera/common.yaml ;
+done
+```
 
 Finally, create your main Puppet manifest, `/etc/puppet/manifests/site.pp`:
 
