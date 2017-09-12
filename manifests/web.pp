@@ -41,6 +41,16 @@ class idm::web (
 
   }
 
+  # Add our alt_names as entries in /etc/hosts in case we don't actually have DNS records for our
+  # alt names.
+  $alt_names.each |Integer $index, String $value| {
+    exec { "add-etc-hosts-entry-value":
+      command => "/bin/sed -ie 's/\\(.*\\b$fqdn\\b.*\\)$/\\1 $value/' /etc/hosts",
+      unless  => "/bin/grep '\\b$fqdn\\b.*\\b$value\\b' /etc/hosts";
+    }
+  }
+
+
 
   class { "apache":
     #default_vhost => false
