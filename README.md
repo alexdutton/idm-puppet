@@ -9,7 +9,7 @@ First, install Puppet (`apt-get install puppet`) and then follow the instruction
 [librarian-puppet](https://github.com/voxpupuli/librarian-puppet). In summary:
 
 ```shell
-apt-get install librarian-puppet git pwgen
+apt-get install librarian-puppet git pwgen iptables-persistent -y
 cd /usr/share/puppet
 librarian-puppet init
 ```
