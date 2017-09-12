@@ -184,14 +184,14 @@ define idm::app (
         command => "$manage_py collectstatic --no-input",
         require => [Exec["idm-${name}-install-requirements"],
                     File[$manage_py],
-                    Anchor["rabbitmq::end"]];
+                    Class["rabbitmq]];
       "idm-${name}-migrate":
         command => "$manage_py migrate",
         user    => $user,
         require => [Exec["idm-${name}-install-requirements"],
                     Postgresql::Server::Database[$user],
                     File[$manage_py],
-                    Anchor["rabbitmq::end"]],
+                    Class["rabbitmq"]],
         before => Anchor["idm-${name}-ready"];
       "idm-${name}-initial-fixtures":
         command => "$manage_py loaddata initial",
