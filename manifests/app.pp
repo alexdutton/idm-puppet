@@ -210,6 +210,9 @@ define idm::app (
         before => Anchor["idm-${name}-ready"];
     }
 
+    # Fixtures require idm-auth to talk to idm-core, so make sure Apache is all set up first.
+    Apache::Vhost <| |> -> Exec["idm-${name}-load-fixture"]
+
     file {
       $wsgi:
         content => template('idm/env.py.erb', 'idm/app.wsgi.erb'),
