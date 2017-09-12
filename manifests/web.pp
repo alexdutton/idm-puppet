@@ -21,7 +21,8 @@ class idm::web (
         command => "/usr/bin/openssl req -x509 -config $ssl_conf -newkey rsa:4096 -keyout $ssl_key -out $ssl_cert -days 3650 -nodes -extensions v3_req",
         creates => $ssl_cert;
       "copy-ssl-cert":
-        command => "/bin/cp $ssl_cert /usr/share/ca-certificates/";
+        command => "/bin/cp $ssl_cert /usr/share/ca-certificates/",
+        refreshonly => true;
       "add-cert-to-ca-certificates":
         command  => "/bin/echo '$fqdn.crt' >> /etc/ca-certificates.conf",
         unless   => "/bin/grep $fqdn.crt /etc/ca-certificates.conf",

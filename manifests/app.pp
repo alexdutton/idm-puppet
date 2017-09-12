@@ -171,10 +171,12 @@ define idm::app (
     "idm-${name}-install-requirements":
       command   => "$venv/bin/pip install -r $repo/requirements.txt",
       require   => Vcsrepo[$repo],
+      refreshonly => true,
       subscribe => Exec["idm-${name}-create-virtualenv"];
     "idm-${name}-install-additional":
       command   => "$venv/bin/pip install flower",
       require   => Vcsrepo[$repo],
+      refreshonly => true,
       subscribe => Exec["idm-${name}-create-virtualenv"];
   }
 
@@ -184,7 +186,7 @@ define idm::app (
         command => "$manage_py collectstatic --no-input",
         require => [Exec["idm-${name}-install-requirements"],
                     File[$manage_py],
-                    Class["rabbitmq]];
+                    Class["rabbitmq"]];
       "idm-${name}-migrate":
         command => "$manage_py migrate",
         user    => $user,
@@ -204,6 +206,7 @@ define idm::app (
         user      => $user,
         require   => Exec["idm-${name}-migrate"],
         subscribe => File[$fixture],
+        refreshonly => true,
         before => Anchor["idm-${name}-ready"];
     }
 
