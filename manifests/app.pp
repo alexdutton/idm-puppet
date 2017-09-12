@@ -159,6 +159,10 @@ define idm::app (
       require => Exec["create-ssl-cert"];
   }
 
+  anchor {"idm-${name}-ready":
+    require => Exec["idm-${name}-install-requirements"]
+  }
+
   exec {
     "idm-${name}-create-virtualenv":
       unless  => "/usr/bin/test -d $venv",
@@ -187,17 +191,20 @@ define idm::app (
         require => [Exec["idm-${name}-install-requirements"],
                     Postgresql::Server::Database[$user],
                     File[$manage_py],
-                    Anchor["rabbitmq::end"]];
+                    Anchor["rabbitmq::end"]],
+        before => Anchor["idm-${name}-ready"];
       "idm-${name}-initial-fixtures":
         command => "$manage_py loaddata initial",
         returns => [0, 1], # Don't worry if there are actually no such fixtures
         user    => $user,
-        require => Exec["idm-${name}-migrate"];
+        require => Exec["idm-${name}-migrate"],
+        before => Anchor["idm-${name}-ready"];
       "idm-${name}-load-fixture":
         command   => "$manage_py loaddata $fixture",
         user      => $user,
         require   => Exec["idm-${name}-migrate"],
-        subscribe => File[$fixture];
+        subscribe => File[$fixture],
+        before => Anchor["idm-${name}-ready"];
     }
 
     file {
@@ -246,13 +253,13 @@ define idm::app (
   service {
     "idm-$name-celery":
       ensure => running,
-      require => File[$systemd_celery_service];
+      require => [File[$systemd_celery_service], Anchor["idm-${name}-ready"]];
     "idm-$name-flower":
       ensure => running,
-      require => File[$systemd_flower_service];
+      require => [File[$systemd_flower_service], Anchor["idm-${name}-ready"]];
     "idm-$name-broker-task-consumer":
       ensure => running,
-      require => File[$systemd_broker_task_consumer_service];
+      require => [File[$systemd_broker_task_consumer_service], Anchor["idm-${name}-ready"]];
   }
 
   postgresql::server::database { $user:
@@ -284,7 +291,8 @@ define idm::app (
     exec { "idm-$name-build-solr-schema":
       command => "$manage_py build_solr_schema > $schema_xml",
       user    => $user,
-      creates => $schema_xml;
+      creates => $schema_xml,
+      require => Anchor["idm-${name}-ready"];
     }
 
     idm::solr::core {
