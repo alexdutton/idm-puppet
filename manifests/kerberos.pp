@@ -59,7 +59,8 @@ class idm::kerberos (
       "kinit-$name":
         command => "/usr/bin/kinit -kt $filename $name",
         user => $owner,
-        group => $group;
+        group => $group,
+        refreshonly => true;
     }
     Exec["create-principal-$name"] -> Exec["extract-keytab-$name"] -> File[$filename] ~> Exec["kinit-$name"]
 
