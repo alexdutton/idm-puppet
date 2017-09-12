@@ -10,7 +10,7 @@
     {"name": "puppetlabs/concat"},
     {"name": "puppetlabs/firewall"},
     {"name": "puppetlabs/postgresql"},
-    {"name": "puppetlabs/rabbitmq"},
+    {"name": "puppet/rabbitmq"},
     {"name": "puppetlabs/vcsrepo"},
     {"name": "Aethylred/kerberos"}
   ]
